@@ -54,7 +54,7 @@ export const ConfirmDeleteModal = ({
               <AlertTriangle className="w-6 h-6 text-red-600" />
             </div>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Delete File
             </h3>
@@ -67,18 +67,18 @@ export const ConfirmDeleteModal = ({
             <p className="text-xs text-gray-500 mb-6">
               This action cannot be undone. The file will be permanently deleted.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-center">
               <button
                 onClick={onCancel}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={onConfirm}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
+                className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
               >
                 {isDeleting ? (
                   <>

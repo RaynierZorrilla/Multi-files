@@ -12,27 +12,33 @@ interface FilePreviewModalProps {
 }
 
 export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProps) => {
-  const { deleteFile, isDeleting, isSuccess } = useFileDelete();
+  const { deleteFile, isDeleting, deletingFileId, isSuccess } = useFileDelete();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingFileId, setDeletingFileId] = useState<number | null>(null);
+  const [imageError, setImageError] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
-      setDeletingFileId(null);
       setShowDeleteModal(false);
     }
   }, [isOpen]);
 
   useEffect(() => {
-    if (isSuccess && deletingFileId !== null && !isDeleting) {
-      setDeletingFileId(null);
+    if (isDeleting && deletingFileId !== null && file && file.id === deletingFileId) {
+      // Cerrar el modal inmediatamente cuando se inicia la eliminación
       setShowDeleteModal(false);
       requestAnimationFrame(() => {
         document.body.style.overflow = '';
         onClose();
       });
     }
-  }, [isSuccess, deletingFileId, isDeleting, onClose]);
+  }, [isDeleting, deletingFileId, file, onClose]);
+
+  useEffect(() => {
+    if (isSuccess && deletingFileId !== null && !isDeleting) {
+      setShowDeleteModal(false);
+    }
+  }, [isSuccess, deletingFileId, isDeleting]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -41,7 +47,7 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
       }
     };
 
-    if (isOpen) {
+    if (isOpen && !isDeleting) {
       document.addEventListener('keydown', handleEscape);
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
@@ -53,7 +59,15 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
     } else {
       document.body.style.overflow = '';
     }
-  }, [isOpen, onClose, showDeleteModal]);
+  }, [isOpen, onClose, showDeleteModal, isDeleting]);
+
+  useEffect(() => {
+    // Resetear errores cuando cambia el archivo
+    if (file) {
+      setImageError(false);
+      setVideoError(false);
+    }
+  }, [file]);
 
   if (!isOpen || !file) return null;
 
@@ -86,14 +100,12 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
 
   const handleConfirmDelete = () => {
     if (file) {
-      setDeletingFileId(file.id);
       deleteFile(file.id);
     }
   };
 
   const handleCancelDelete = () => {
     setShowDeleteModal(false);
-    setDeletingFileId(null);
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -148,23 +160,50 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
 
         {/* Content */}
         <div className="flex-1 overflow-auto p-6 flex items-center justify-center bg-gray-50">
-          {isImage ? (
+          {isDeleting ? (
+            <div className="text-center max-w-md">
+              <div className="bg-gray-100 rounded-full p-8 inline-block mb-4">
+                <File className="w-16 h-16 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Deleting file...</h3>
+            </div>
+          ) : isImage ? (
             <div className="max-w-full max-h-full">
-              <img
-                src={fileService.getDownloadUrl(file.id)}
-                alt={file.original_name}
-                className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg"
-              />
+              {imageError ? (
+                <div className="text-center max-w-md">
+                  <div className="bg-gray-100 rounded-full p-8 inline-block mb-4">
+                    <File className="w-16 h-16 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Image not available</h3>
+                </div>
+              ) : (
+                <img
+                  src={fileService.getDownloadUrl(file.id)}
+                  alt={file.original_name}
+                  className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg"
+                  onError={() => setImageError(true)}
+                />
+              )}
             </div>
           ) : isVideo ? (
             <div className="w-full max-w-4xl">
-              <video
-                src={fileService.getDownloadUrl(file.id)}
-                controls
-                className="w-full max-h-[70vh] rounded-lg shadow-lg"
-              >
-                Your browser does not support the video tag.
-              </video>
+              {videoError ? (
+                <div className="text-center max-w-md">
+                  <div className="bg-gray-100 rounded-full p-8 inline-block mb-4">
+                    <File className="w-16 h-16 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Video not available</h3>
+                </div>
+              ) : (
+                <video
+                  src={fileService.getDownloadUrl(file.id)}
+                  controls
+                  className="w-full max-h-[70vh] rounded-lg shadow-lg"
+                  onError={() => setVideoError(true)}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              )}
             </div>
           ) : (
             <div className="text-center max-w-md">
