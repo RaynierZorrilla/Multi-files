@@ -11,8 +11,12 @@ interface FileCardProps {
 }
 
 export const FileCard = ({ file, onFileClick }: FileCardProps) => {
-  const { deleteFile, isDeleting } = useFileDelete();
+  const { deleteFile, isDeletingFile } = useFileDelete();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  
+  const isDeleting = isDeletingFile(file.id);
 
   const isImage = file.content_type.startsWith('image/');
   const isVideo = file.content_type.startsWith('video/');
@@ -65,28 +69,49 @@ export const FileCard = ({ file, onFileClick }: FileCardProps) => {
       onClick={handleCardClick}
     >
       <div className="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden relative">
-        {isImage ? (
-          <img
-            src={fileService.getThumbnailUrl(file.id, { w: 400, h: 300, fit: 'contain' })}
-            alt={file.original_name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        ) : isVideo ? (
-          <>
-            <video
-              src={fileService.getDownloadUrl(file.id)}
-              className="w-full h-full object-cover"
-              muted
-              playsInline
-              preload="metadata"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-20 transition-opacity">
-              <div className="bg-white bg-opacity-90 rounded-full p-3">
-                <Video className="w-8 h-8 text-gray-700" />
-              </div>
+        {isDeleting ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+            <div className="text-center">
+              <File className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+              <p className="text-xs font-medium text-gray-500">Deleting...</p>
             </div>
-          </>
+          </div>
+        ) : isImage ? (
+          imageError ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <File className="w-16 h-16 text-gray-400" />
+            </div>
+          ) : (
+            <img
+              src={fileService.getThumbnailUrl(file.id, { w: 400, h: 300, fit: 'contain' })}
+              alt={file.original_name}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              onError={() => setImageError(true)}
+            />
+          )
+        ) : isVideo ? (
+          videoError ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <Video className="w-16 h-16 text-gray-400" />
+            </div>
+          ) : (
+            <>
+              <video
+                src={fileService.getDownloadUrl(file.id)}
+                className="w-full h-full object-cover"
+                muted
+                playsInline
+                preload="metadata"
+                onError={() => setVideoError(true)}
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-20 transition-opacity">
+                <div className="bg-white bg-opacity-90 rounded-full p-3">
+                  <Video className="w-8 h-8 text-gray-700" />
+                </div>
+              </div>
+            </>
+          )
         ) : isPDF ? (
           <div className="w-full h-full relative bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
             <div className="text-center">
