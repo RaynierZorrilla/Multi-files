@@ -5,14 +5,26 @@ import { FilePreviewModal } from './FilePreviewModal';
 import { FileMetadata } from '../types/file.types';
 import { Loader2 } from 'lucide-react';
 
-export const FileList = () => {
+interface FileListProps {
+  selectionMode?: boolean;
+  selectedFiles?: Set<number>;
+  onSelectChange?: (fileId: number, selected: boolean) => void;
+}
+
+export const FileList = ({ 
+  selectionMode = false, 
+  selectedFiles = new Set(),
+  onSelectChange 
+}: FileListProps) => {
   const { data: files, isLoading, isError, error } = useFiles();
   const [previewFile, setPreviewFile] = useState<FileMetadata | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleFileClick = (file: FileMetadata) => {
-    setPreviewFile(file);
-    setIsPreviewOpen(true);
+    if (!selectionMode) {
+      setPreviewFile(file);
+      setIsPreviewOpen(true);
+    }
   };
 
   const handleClosePreview = () => {
@@ -82,7 +94,14 @@ export const FileList = () => {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {files.map((file) => (
-          <FileCard key={file.id} file={file} onFileClick={handleFileClick} />
+          <FileCard 
+            key={file.id} 
+            file={file} 
+            onFileClick={handleFileClick}
+            isSelectionMode={selectionMode}
+            isSelected={selectedFiles.has(file.id)}
+            onSelectChange={onSelectChange}
+          />
         ))}
       </div>
       <FilePreviewModal

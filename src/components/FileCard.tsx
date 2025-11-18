@@ -8,9 +8,18 @@ import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 interface FileCardProps {
   file: FileMetadata;
   onFileClick?: (file: FileMetadata) => void;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onSelectChange?: (fileId: number, selected: boolean) => void;
 }
 
-export const FileCard = ({ file, onFileClick }: FileCardProps) => {
+export const FileCard = ({ 
+  file, 
+  onFileClick, 
+  isSelectionMode = false, 
+  isSelected = false,
+  onSelectChange 
+}: FileCardProps) => {
   const { deleteFile, isDeletingFile } = useFileDelete();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -58,17 +67,48 @@ export const FileCard = ({ file, onFileClick }: FileCardProps) => {
   };
 
   const handleCardClick = () => {
-    if (onFileClick) {
+    if (isSelectionMode && onSelectChange) {
+      onSelectChange(file.id, !isSelected);
+    } else if (onFileClick) {
       onFileClick(file);
+    }
+  };
+
+  const handleCheckboxChange = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onSelectChange) {
+      onSelectChange(file.id, !isSelected);
     }
   };
 
   return (
     <div
-      className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+      className={`bg-white rounded-lg border overflow-hidden hover:shadow-lg transition-shadow ${
+        isSelectionMode ? 'cursor-pointer' : 'cursor-pointer'
+      } ${
+        isSelected ? 'border-blue-500 ring-2 ring-blue-500' : 'border-gray-200'
+      }`}
       onClick={handleCardClick}
     >
       <div className="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden relative">
+        {isSelectionMode && (
+          <div 
+            className="absolute top-2 left-2 z-10"
+            onClick={handleCheckboxChange}
+          >
+            <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+              isSelected 
+                ? 'bg-blue-600 border-blue-600' 
+                : 'bg-white border-gray-300'
+            }`}>
+              {isSelected && (
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+          </div>
+        )}
         {isDeleting ? (
           <div className="w-full h-full flex items-center justify-center bg-gray-200">
             <div className="text-center">
@@ -131,22 +171,24 @@ export const FileCard = ({ file, onFileClick }: FileCardProps) => {
         <p className="text-sm text-gray-500 mt-1">{formatFileSize(file.size)}</p>
         <p className="text-xs text-gray-400 mt-1">{formatDate(file.created_at)}</p>
 
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={handleDownload}
-            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            <span className="text-sm font-medium">Download</span>
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
-        </div>
+        {!isSelectionMode && (
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={handleDownload}
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              <span className="text-sm font-medium">Download</span>
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
       <ConfirmDeleteModal
         isOpen={showDeleteModal}
