@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { fileService } from '../services/file.service';
+import { useToast } from '../contexts/ToastContext';
 
 export const useBulkFileDelete = () => {
   const queryClient = useQueryClient();
   const [deletingFileIds, setDeletingFileIds] = useState<Set<number>>(new Set());
+  const { showSuccess, showError } = useToast();
 
   const mutation = useMutation({
     mutationFn: async (fileIds: number[]) => {
@@ -21,12 +23,27 @@ export const useBulkFileDelete = () => {
       
       return results;
     },
-    onSuccess: () => {
+    onSuccess: (_, fileIds) => {
       queryClient.invalidateQueries({ queryKey: ['files'] });
       setDeletingFileIds(new Set());
+      const fileCount = fileIds.length;
+      const message =
+        fileCount === 1
+          ? 'File deleted successfully'
+          : `${fileCount} files deleted successfully`;
+      showSuccess(message);
     },
-    onError: () => {
+    onError: (error: unknown) => {
       setDeletingFileIds(new Set());
+      let errorMessage = 'Failed to delete files. Please try again.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = String(error.message);
+      }
+      
+      showError(errorMessage);
     },
   });
 
