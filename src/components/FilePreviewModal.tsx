@@ -119,14 +119,14 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="relative bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-semibold text-gray-900 truncate">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white truncate">
               {file.original_name}
             </h2>
-            <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+            <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
               <span>{formatFileSize(file.size)}</span>
               <span>•</span>
               <span>{file.content_type}</span>
@@ -137,7 +137,7 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
           <div className="flex items-center gap-2 ml-4">
             <button
               onClick={handleDownload}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
             >
               <Download className="w-4 h-4" />
               <span>Download</span>
@@ -145,13 +145,13 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50"
             >
               <Trash2 className="w-5 h-5" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -159,22 +159,22 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto p-6 flex items-center justify-center bg-gray-50">
+        <div className="flex-1 overflow-auto p-6 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
           {isDeleting ? (
             <div className="text-center max-w-md">
-              <div className="bg-gray-100 rounded-full p-8 inline-block mb-4">
-                <File className="w-16 h-16 text-gray-400" />
+              <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-8 inline-block mb-4">
+                <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Deleting file...</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Deleting file...</h3>
             </div>
           ) : isImage ? (
             <div className="max-w-full max-h-full">
               {imageError ? (
                 <div className="text-center max-w-md">
-                  <div className="bg-gray-100 rounded-full p-8 inline-block mb-4">
-                    <File className="w-16 h-16 text-gray-400" />
+                  <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-8 inline-block mb-4">
+                    <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Image not available</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Image not available</h3>
                 </div>
               ) : (
                 <img
@@ -189,10 +189,10 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
             <div className="w-full max-w-4xl">
               {videoError ? (
                 <div className="text-center max-w-md">
-                  <div className="bg-gray-100 rounded-full p-8 inline-block mb-4">
-                    <File className="w-16 h-16 text-gray-400" />
+                  <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-8 inline-block mb-4">
+                    <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Video not available</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Video not available</h3>
                 </div>
               ) : (
                 <video
@@ -207,32 +207,32 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
             </div>
           ) : (
             <div className="text-center max-w-md">
-              <div className="bg-gray-100 rounded-full p-8 inline-block mb-4">
-                <File className="w-16 h-16 text-gray-400" />
+              <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-8 inline-block mb-4">
+                <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {file.original_name}
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
                 This file type cannot be previewed in the browser.
               </p>
-              <div className="bg-white rounded-lg p-4 border border-gray-200 text-left space-y-2">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-left space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Type:</span>
-                  <span className="font-medium">{file.content_type}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Type:</span>
+                  <span className="font-medium dark:text-gray-200">{file.content_type}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Size:</span>
-                  <span className="font-medium">{formatFileSize(file.size)}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Size:</span>
+                  <span className="font-medium dark:text-gray-200">{formatFileSize(file.size)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Extension:</span>
-                  <span className="font-medium">{file.ext}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Extension:</span>
+                  <span className="font-medium dark:text-gray-200">{file.ext}</span>
                 </div>
                 {file.width && file.height && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Dimensions:</span>
-                    <span className="font-medium">
+                    <span className="text-gray-600 dark:text-gray-400">Dimensions:</span>
+                    <span className="font-medium dark:text-gray-200">
                       {file.width} × {file.height}
                     </span>
                   </div>
