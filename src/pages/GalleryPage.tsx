@@ -69,20 +69,20 @@ export const GalleryPage = () => {
     <div className="py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">File Gallery</h1>
-          <p className="text-gray-600">Browse and manage your uploaded files</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">File Gallery</h1>
+          <p className="text-gray-600 dark:text-gray-300">Browse and manage your uploaded files</p>
         </div>
         <div className="flex items-center gap-2">
           {selectionMode && (
             <>
-              <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <span className="text-sm font-medium text-blue-700">
+              <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
                   {selectedCount} selected
                 </span>
               </div>
               <button
                 onClick={selectedCount > 0 ? handleDeselectAll : handleSelectAll}
-                className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 {selectedCount > 0 ? (
                   <>
@@ -99,14 +99,14 @@ export const GalleryPage = () => {
               <button
                 onClick={handleBulkDelete}
                 disabled={selectedCount === 0 || isDeleting}
-                className="flex items-center gap-2 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-red-600 dark:bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>Delete Selected</span>
               </button>
               <button
                 onClick={handleToggleSelectionMode}
-                className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <X className="w-4 h-4" />
                 <span>Cancel</span>
@@ -117,14 +117,14 @@ export const GalleryPage = () => {
             <>
               <button
                 onClick={handleToggleSelectionMode}
-                className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <CheckSquare className="w-4 h-4" />
                 <span>Select Files</span>
               </button>
               <button
                 onClick={handleRefresh}
-                className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Refresh</span>
