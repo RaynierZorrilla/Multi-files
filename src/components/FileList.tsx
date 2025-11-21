@@ -3,7 +3,7 @@ import { useFiles } from '../hooks';
 import { FileCard } from './FileCard';
 import { FilePreviewModal } from './FilePreviewModal';
 import { FileMetadata } from '../types/file.types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload } from 'lucide-react';
 
 interface FileListProps {
   selectionMode?: boolean;
@@ -47,7 +47,7 @@ export const FileList = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -61,18 +61,18 @@ export const FileList = ({
     const isServerError = errorMessage.includes('500');
 
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">
+      <div className="glass-strong border-destructive/50 rounded-2xl p-6 text-destructive">
         <p className="font-medium">Error loading files</p>
         <p className="text-sm mt-1">{errorMessage}</p>
         {isNetworkError && (
-          <div className="mt-3 text-xs bg-red-100 dark:bg-red-900/30 p-2 rounded">
+          <div className="mt-3 text-xs glass p-3 rounded-xl">
             <p className="font-semibold">CORS/Network Error:</p>
             <p>Make sure the server is running at {import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}</p>
             <p>Check that CORS is enabled on the server.</p>
           </div>
         )}
         {isServerError && (
-          <div className="mt-3 text-xs bg-red-100 dark:bg-red-900/30 p-2 rounded">
+          <div className="mt-3 text-xs glass p-3 rounded-xl">
             <p className="font-semibold">Server Error (500):</p>
             <p>There's an error on the server. Check the server logs for more details.</p>
           </div>
@@ -83,16 +83,17 @@ export const FileList = ({
 
   if (!files || files.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400 text-lg">No files uploaded yet</p>
-        <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Upload your first file to get started</p>
+      <div className="glass-strong rounded-3xl p-16 text-center">
+        <Upload className="h-16 w-16 mx-auto mb-4 text-foreground/30" />
+        <h3 className="text-xl font-semibold mb-2">No files yet</h3>
+        <p className="text-foreground/60 mb-6">Upload your first file to get started</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {files.map((file) => (
           <FileCard 
             key={file.id} 

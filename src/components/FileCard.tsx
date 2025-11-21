@@ -125,49 +125,47 @@ export const FileCard = ({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg border overflow-hidden hover:shadow-lg transition-shadow ${
-        isSelectionMode ? 'cursor-pointer' : 'cursor-pointer'
-      } ${
-        isSelected ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-500 dark:ring-blue-400' : 'border-gray-200 dark:border-gray-700'
-      }`}
+      className={`group relative glass rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:glass-strong transition-all duration-300 cursor-pointer shimmer ${
+        isSelected ? 'ring-2 ring-primary shadow-lg shadow-primary/20' : ''
+      } hover:scale-[1.02] hover:shadow-xl`}
       onClick={handleCardClick}
     >
-      <div className="aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+      <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center overflow-hidden relative rounded-xl mb-4">
         {isSelectionMode && (
           <div 
-            className="absolute top-2 left-2 z-10"
+            className="absolute top-4 right-4 z-10"
             onClick={handleCheckboxChange}
           >
-            <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+            <div className={`h-6 w-6 rounded-lg border-2 flex items-center justify-center transition-all ${
               isSelected 
-                ? 'bg-blue-600 dark:bg-blue-500 border-blue-600 dark:border-blue-500' 
-                : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-primary border-primary' 
+                : 'border-foreground/30 bg-background/50'
             }`}>
               {isSelected && (
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg className="h-4 w-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               )}
             </div>
           </div>
         )}
         {isDeleting ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-600">
+          <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">
-              <File className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Deleting...</p>
+              <File className="w-16 h-16 text-foreground/30 mx-auto mb-2" />
+              <p className="text-xs font-medium text-foreground/50">Deleting...</p>
             </div>
           </div>
         ) : isImage ? (
           imageError || !imageUrl ? (
             <div className="w-full h-full flex items-center justify-center">
-              <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+              <File className="w-16 h-16 text-foreground/30" />
             </div>
           ) : (
             <img
               src={imageUrl}
               alt={file.original_name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-xl"
               loading="lazy"
               onError={() => setImageError(true)}
             />
@@ -175,63 +173,71 @@ export const FileCard = ({
         ) : isVideo ? (
           videoError || !videoUrl ? (
             <div className="w-full h-full flex items-center justify-center">
-              <Video className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+              <Video className="w-16 h-16 text-foreground/30" />
             </div>
           ) : (
             <>
               <video
                 src={videoUrl}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-xl"
                 muted
                 playsInline
                 preload="metadata"
                 onError={() => setVideoError(true)}
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-20 transition-opacity">
-                <div className="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-full p-3">
-                  <Video className="w-8 h-8 text-gray-700 dark:text-gray-300" />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/20 transition-opacity rounded-xl">
+                <div className="glass-strong rounded-full p-3">
+                  <Video className="w-8 h-8 text-foreground" />
                 </div>
               </div>
             </>
           )
         ) : isPDF ? (
-          <div className="w-full h-full relative bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 flex items-center justify-center">
+          <div className="w-full h-full relative bg-gradient-to-br from-destructive/20 to-destructive/10 flex items-center justify-center rounded-xl">
             <div className="text-center">
-              <File className="w-16 h-16 text-red-500 dark:text-red-400 mx-auto mb-2" />
-              <p className="text-xs font-medium text-red-700 dark:text-red-300 uppercase">PDF Document</p>
+              <File className="w-16 h-16 text-destructive mx-auto mb-2" />
+              <p className="text-xs font-medium text-destructive uppercase">PDF Document</p>
             </div>
           </div>
         ) : (
-          <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+          <File className="w-16 h-16 text-foreground/30" />
         )}
       </div>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-800 dark:text-gray-200 truncate" title={file.original_name}>
+      {/* File Info */}
+      <div className="text-center">
+        <h3 className="font-semibold mb-1 truncate text-sm sm:text-base text-balance" title={file.original_name}>
           {file.original_name}
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{formatFileSize(file.size)}</p>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{formatDate(file.created_at)}</p>
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-foreground/60 flex-wrap">
+          <span>{formatFileSize(file.size)}</span>
+          <span>•</span>
+          <span className="hidden sm:inline">{formatDate(file.created_at)}</span>
+          <span className="sm:hidden">{new Date(file.created_at).toLocaleDateString()}</span>
+        </div>
+      </div>
 
-        {!isSelectionMode && (
-          <div className="flex gap-2 mt-4">
+      {/* Actions (shown on hover when not in selection mode) */}
+      {!isSelectionMode && (
+        <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+          <div className="flex gap-1.5 sm:gap-2">
             <button
               onClick={handleDownload}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 dark:bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1 sm:gap-2 bg-secondary text-secondary-foreground py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl hover:bg-secondary/90 transition-colors text-xs font-medium"
             >
-              <Download className="w-4 h-4" />
-              <span className="text-sm font-medium">Download</span>
+              <Download className="h-3 w-3" />
+              <span className="hidden sm:inline">Download</span>
             </button>
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50"
+              className="bg-destructive text-destructive-foreground rounded-lg sm:rounded-xl h-7 sm:h-8 px-2 sm:px-3 hover:bg-destructive/90 transition-colors disabled:opacity-50"
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="h-3 w-3" />
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <ConfirmDeleteModal
         isOpen={showDeleteModal}
         fileName={file.original_name}
