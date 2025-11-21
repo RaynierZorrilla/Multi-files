@@ -3,6 +3,7 @@ import { Link } from './Link';
 import { HardDrive, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../hooks';
 import { useAuth } from '../contexts/AuthContext';
+import { Button } from './ui/Button';
 
 interface LayoutProps {
   children: ReactNode;
@@ -19,75 +20,108 @@ export const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">
-              <HardDrive className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              <span>FileStorage</span>
+    <div className="min-h-screen">
+      {/* Header with glassmorphic effect */}
+      <nav className="sticky top-0 z-50 glass border-b border-border/50 backdrop-blur-xl">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo */}
+            <Link 
+              to="/" 
+              className="flex items-center gap-3 group"
+            >
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 group-hover:from-primary/30 group-hover:to-secondary/30 transition-all duration-300">
+                <HardDrive className="w-6 h-6 text-primary" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text ">
+                FileStorage
+              </span>
             </Link>
-            <div className="flex items-center gap-6">
+
+            {/* Navigation Links */}
+            <div className="flex items-center gap-2 sm:gap-4">
               {isAuthenticated ? (
                 <>
                   <Link
                     to="/"
-                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                    className="hidden sm:flex items-center px-4 py-2 rounded-xl text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-accent/50 transition-all duration-200"
                   >
                     Home
                   </Link>
                   <Link
                     to="/upload"
-                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                    className="hidden sm:flex items-center px-4 py-2 rounded-xl text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-accent/50 transition-all duration-200"
                   >
                     Upload
                   </Link>
                   <Link
                     to="/gallery"
-                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                    className="hidden sm:flex items-center px-4 py-2 rounded-xl text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-accent/50 transition-all duration-200"
                   >
                     Gallery
                   </Link>
-                  <button
+                  
+                  {/* Mobile Menu - could be expanded later */}
+                  <div className="sm:hidden flex items-center gap-2">
+                    <Link
+                      to="/gallery"
+                      className="flex items-center px-3 py-2 rounded-xl text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-accent/50 transition-all duration-200"
+                    >
+                      Gallery
+                    </Link>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    className="rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10"
                     aria-label="Logout"
                   >
-                    <LogOut className="w-5 h-5" />
-                    <span>Logout</span>
-                  </button>
+                    <LogOut className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </Button>
                 </>
               ) : (
                 <Link
                   to="/auth"
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                  className="px-4 py-2 rounded-xl text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-accent/50 transition-all duration-200"
                 >
                   Login
                 </Link>
               )}
-              <button
+              
+              {/* Theme Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={toggleTheme}
-                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="rounded-xl hover:bg-accent/50"
                 aria-label="Toggle theme"
               >
                 {theme === 'dark' ? (
-                  <Sun className="w-5 h-5" />
+                  <Sun className="w-5 h-5 text-foreground/70" />
                 ) : (
-                  <Moon className="w-5 h-5" />
+                  <Moon className="w-5 h-5 text-foreground/70" />
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       </nav>
 
-      <main className="container mx-auto px-4">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {children}
       </main>
 
-      <footer className="mt-16 py-8 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors">
-        <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-          <p>File Storage System - Powered by FastAPI & React</p>
+      {/* Footer with glassmorphic effect */}
+      <footer className="mt-16 py-8 border-t border-border/50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-foreground/60 text-sm">
+              File Storage System
+            </p>
+          </div>
         </div>
       </footer>
     </div>

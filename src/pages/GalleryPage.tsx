@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { FileList, FileUpload } from '../components';
-import { RefreshCw, CheckSquare, Square, Trash2, X, Upload, ChevronDown, ChevronUp } from 'lucide-react';
+import { RefreshCw, CheckSquare, Square, Trash2, Upload, Grid3x3 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBulkFileDelete, useFiles } from '../hooks';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
+import { Button } from '../components/ui/Button';
 
 export const GalleryPage = () => {
   const queryClient = useQueryClient();
@@ -67,104 +68,105 @@ export const GalleryPage = () => {
   const selectedCount = selectedFiles.size;
 
   return (
-    <div className="py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">File Gallery</h1>
-          <p className="text-gray-600 dark:text-gray-300">Browse and manage your uploaded files</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectionMode && (
-            <>
-              <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
-                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                  {selectedCount} selected
-                </span>
-              </div>
-              <button
-                onClick={selectedCount > 0 ? handleDeselectAll : handleSelectAll}
-                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                {selectedCount > 0 ? (
-                  <>
-                    <Square className="w-4 h-4" />
-                    <span>Deselect All</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckSquare className="w-4 h-4" />
-                    <span>Select All</span>
-                  </>
-                )}
-              </button>
-              <button
-                onClick={handleBulkDelete}
-                disabled={selectedCount === 0 || isDeleting}
-                className="flex items-center gap-2 bg-red-600 dark:bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span>Delete Selected</span>
-              </button>
-              <button
-                onClick={handleToggleSelectionMode}
-                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                <X className="w-4 h-4" />
-                <span>Cancel</span>
-              </button>
-            </>
-          )}
-          {!selectionMode && (
-            <>
-              <button
-                onClick={() => setShowUpload(!showUpload)}
-                className="flex items-center gap-2 bg-blue-600 dark:bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-              >
-                <Upload className="w-4 h-4" />
-                <span>Upload Files</span>
-                {showUpload ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </button>
-              <button
-                onClick={handleToggleSelectionMode}
-                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                <CheckSquare className="w-4 h-4" />
-                <span>Select Files</span>
-              </button>
-              <button
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-4 sm:mb-6">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-1 sm:mb-2">My Files</h1>
+              <p className="text-sm sm:text-base text-foreground/60">Manage and organize your uploads</p>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button
+                variant="outline"
+                size="icon"
+                className="glass rounded-xl hover:glass-strong bg-transparent flex-shrink-0"
                 onClick={handleRefresh}
-                className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                <RefreshCw className="w-4 h-4" />
-                <span>Refresh</span>
-              </button>
-            </>
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="glass rounded-xl hover:glass-strong bg-transparent flex-1 sm:flex-initial"
+                onClick={() => setShowUpload(!showUpload)}
+              >
+                <Upload className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Upload</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Upload Area */}
+          {showUpload && !selectionMode && (
+            <div className="mb-4 sm:mb-6 glass-strong rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 border-2 border-dashed border-primary/30 hover:border-primary/50 transition-colors animate-in fade-in slide-in-from-top-4 duration-300">
+              <FileUpload />
+            </div>
           )}
+
+          {/* Controls Bar */}
+          <div className="glass rounded-xl sm:rounded-2xl p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Button
+                  variant={selectionMode ? 'default' : 'ghost'}
+                  size="sm"
+                  className="rounded-xl text-xs sm:text-sm"
+                  onClick={handleToggleSelectionMode}
+                >
+                  {selectionMode ? <CheckSquare className="h-4 w-4 sm:mr-2" /> : <Square className="h-4 w-4 sm:mr-2" />}
+                  <span className="hidden sm:inline">{selectionMode ? 'Cancel Selection' : 'Select Files'}</span>
+                  <span className="sm:hidden">{selectionMode ? 'Cancel' : 'Select'}</span>
+                </Button>
+
+                {selectionMode && (
+                  <>
+                    <Button variant="ghost" size="sm" className="rounded-xl text-xs sm:text-sm" onClick={handleSelectAll}>
+                      <span className="hidden sm:inline">Select All</span>
+                      <span className="sm:hidden">All</span>
+                    </Button>
+                    <Button variant="ghost" size="sm" className="rounded-xl text-xs sm:text-sm" onClick={handleDeselectAll}>
+                      <span className="hidden sm:inline">Deselect All</span>
+                      <span className="sm:hidden">None</span>
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 justify-between sm:justify-end">
+                {selectionMode && selectedCount > 0 && (
+                  <Button variant="destructive" size="sm" className="rounded-xl text-xs sm:text-sm flex-1 sm:flex-initial" onClick={handleBulkDelete} disabled={isDeleting}>
+                    <Trash2 className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Delete Selected ({selectedCount})</span>
+                    <span className="sm:hidden">Delete ({selectedCount})</span>
+                  </Button>
+                )}
+                {files && (
+                  <div className="flex items-center gap-1 px-2 sm:px-3 py-1 glass-strong rounded-xl flex-shrink-0">
+                    <Grid3x3 className="h-3 w-3 sm:h-4 sm:w-4 text-foreground/60" />
+                    <span className="text-xs sm:text-sm text-foreground/60">{files.length} files</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Files Grid */}
+        <FileList 
+          selectionMode={selectionMode}
+          selectedFiles={selectedFiles}
+          onSelectChange={handleSelectChange}
+        />
+        
+        <ConfirmDeleteModal
+          isOpen={showBulkDeleteModal}
+          fileName={`${selectedCount} file${selectedCount !== 1 ? 's' : ''}`}
+          onConfirm={handleConfirmBulkDelete}
+          onCancel={handleCancelBulkDelete}
+          isDeleting={isDeleting}
+        />
       </div>
-
-      {showUpload && !selectionMode && (
-        <div className="mb-8">
-          <FileUpload />
-        </div>
-      )}
-
-      <FileList 
-        selectionMode={selectionMode}
-        selectedFiles={selectedFiles}
-        onSelectChange={handleSelectChange}
-      />
-      <ConfirmDeleteModal
-        isOpen={showBulkDeleteModal}
-        fileName={`${selectedCount} file${selectedCount !== 1 ? 's' : ''}`}
-        onConfirm={handleConfirmBulkDelete}
-        onCancel={handleCancelBulkDelete}
-        isDeleting={isDeleting}
-      />
     </div>
   );
 };
