@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Download, Trash2, File, Video } from 'lucide-react';
 import { FileMetadata } from '../types/file.types';
 import { fileService } from '../services/file.service';
@@ -24,12 +24,54 @@ export const FileCard = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   
   const isDeleting = isDeletingFile(file.id);
 
   const isImage = file.content_type.startsWith('image/');
   const isVideo = file.content_type.startsWith('video/');
   const isPDF = file.content_type === 'application/pdf';
+
+  // Cargar URLs autenticadas para imágenes y videos
+  useEffect(() => {
+    let imageBlobUrl: string | null = null;
+    let videoBlobUrl: string | null = null;
+
+    if (isImage && !imageError) {
+      fileService
+        .getAuthenticatedUrl(fileService.getThumbnailUrl(file.id, { w: 400, h: 300, fit: 'contain' }))
+        .then((url) => {
+          imageBlobUrl = url;
+          setImageUrl(url);
+        })
+        .catch(() => {
+          setImageError(true);
+        });
+    }
+
+    if (isVideo && !videoError) {
+      fileService
+        .getAuthenticatedUrl(fileService.getDownloadUrl(file.id))
+        .then((url) => {
+          videoBlobUrl = url;
+          setVideoUrl(url);
+        })
+        .catch(() => {
+          setVideoError(true);
+        });
+    }
+
+    // Cleanup: revocar URLs de blob cuando el componente se desmonte
+    return () => {
+      if (imageBlobUrl) {
+        URL.revokeObjectURL(imageBlobUrl);
+      }
+      if (videoBlobUrl) {
+        URL.revokeObjectURL(videoBlobUrl);
+      }
+    };
+  }, [file.id, isImage, isVideo, imageError, videoError]);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return bytes + ' B';
@@ -117,13 +159,13 @@ export const FileCard = ({
             </div>
           </div>
         ) : isImage ? (
-          imageError ? (
+          imageError || !imageUrl ? (
             <div className="w-full h-full flex items-center justify-center">
               <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
             </div>
           ) : (
             <img
-              src={fileService.getThumbnailUrl(file.id, { w: 400, h: 300, fit: 'contain' })}
+              src={imageUrl}
               alt={file.original_name}
               className="w-full h-full object-cover"
               loading="lazy"
@@ -131,14 +173,14 @@ export const FileCard = ({
             />
           )
         ) : isVideo ? (
-          videoError ? (
+          videoError || !videoUrl ? (
             <div className="w-full h-full flex items-center justify-center">
               <Video className="w-16 h-16 text-gray-400 dark:text-gray-500" />
             </div>
           ) : (
             <>
               <video
-                src={fileService.getDownloadUrl(file.id)}
+                src={videoUrl}
                 className="w-full h-full object-cover"
                 muted
                 playsInline

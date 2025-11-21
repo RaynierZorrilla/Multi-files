@@ -3,3 +3,5 @@ export { useFiles } from './useFiles';
 export { useFileDelete } from './useFileDelete';
 export { useBulkFileDelete } from './useBulkFileDelete';
 export { useTheme } from './useTheme';
+export { useLogin } from './useLogin';
+export { useSignup } from './useSignup';
