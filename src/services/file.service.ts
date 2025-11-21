@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_CONFIG } from '../config/api.config';
+import { API_CONFIG, TOKEN_KEY } from '../config/api.config';
 import {
   FileMetadata,
   UploadResponse,
@@ -10,6 +10,35 @@ import {
 const api = axios.create({
   baseURL: API_CONFIG.BASE_URL,
 });
+
+// Interceptor para incluir el token en todas las peticiones
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor para manejar errores 401 (token expirado o inválido)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expirado o inválido
+      localStorage.removeItem(TOKEN_KEY);
+      // Redirigir a login
+      window.history.pushState({}, '', '/auth');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const fileService = {
   uploadFiles: async (
@@ -84,5 +113,28 @@ export const fileService = {
 
   getDownloadUrl: (fileId: number): string => {
     return `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DOWNLOAD(fileId)}`;
+  },
+
+  // Función para obtener una imagen/video como blob URL con autenticación
+  getAuthenticatedUrl: async (url: string): Promise<string> => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    
+    try {
+      const response = await fetch(url, {
+        headers: token ? {
+          'Authorization': `Bearer ${token}`
+        } : {}
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch resource: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Error fetching authenticated resource:', error);
+      throw error;
+    }
   },
 };

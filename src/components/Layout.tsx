@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 import { Link } from './Link';
-import { HardDrive, Moon, Sun } from 'lucide-react';
+import { HardDrive, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../hooks';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,6 +10,13 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    window.history.pushState({}, '', '/auth');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -20,24 +28,43 @@ export const Layout = ({ children }: LayoutProps) => {
               <span>FileStorage</span>
             </Link>
             <div className="flex items-center gap-6">
-              <Link
-                to="/"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                to="/upload"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
-              >
-                Upload
-              </Link>
-              <Link
-                to="/gallery"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
-              >
-                Gallery
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/"
+                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/upload"
+                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                  >
+                    Upload
+                  </Link>
+                  <Link
+                    to="/gallery"
+                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                  >
+                    Gallery
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    aria-label="Logout"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Logout</span>
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                >
+                  Login
+                </Link>
+              )}
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"

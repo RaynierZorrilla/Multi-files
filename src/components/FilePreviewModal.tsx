@@ -16,6 +16,8 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -66,8 +68,55 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
     if (file) {
       setImageError(false);
       setVideoError(false);
+      setImageUrl(null);
+      setVideoUrl(null);
     }
   }, [file]);
+
+  // Cargar URLs autenticadas para imágenes y videos
+  useEffect(() => {
+    if (!file || !isOpen) return;
+
+    let imageBlobUrl: string | null = null;
+    let videoBlobUrl: string | null = null;
+
+    const isImage = file.content_type.startsWith('image/');
+    const isVideo = file.content_type.startsWith('video/');
+
+    if (isImage && !imageError) {
+      fileService
+        .getAuthenticatedUrl(fileService.getDownloadUrl(file.id))
+        .then((url) => {
+          imageBlobUrl = url;
+          setImageUrl(url);
+        })
+        .catch(() => {
+          setImageError(true);
+        });
+    }
+
+    if (isVideo && !videoError) {
+      fileService
+        .getAuthenticatedUrl(fileService.getDownloadUrl(file.id))
+        .then((url) => {
+          videoBlobUrl = url;
+          setVideoUrl(url);
+        })
+        .catch(() => {
+          setVideoError(true);
+        });
+    }
+
+    // Cleanup: revocar URLs de blob cuando el componente se desmonte o cambie el archivo
+    return () => {
+      if (imageBlobUrl) {
+        URL.revokeObjectURL(imageBlobUrl);
+      }
+      if (videoBlobUrl) {
+        URL.revokeObjectURL(videoBlobUrl);
+      }
+    };
+  }, [file, isOpen, imageError, videoError]);
 
   if (!isOpen || !file) return null;
 
@@ -169,7 +218,7 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
             </div>
           ) : isImage ? (
             <div className="max-w-full max-h-full">
-              {imageError ? (
+              {imageError || !imageUrl ? (
                 <div className="text-center max-w-md">
                   <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-8 inline-block mb-4">
                     <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
@@ -178,7 +227,7 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
                 </div>
               ) : (
                 <img
-                  src={fileService.getDownloadUrl(file.id)}
+                  src={imageUrl}
                   alt={file.original_name}
                   className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg"
                   onError={() => setImageError(true)}
@@ -187,7 +236,7 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
             </div>
           ) : isVideo ? (
             <div className="w-full max-w-4xl">
-              {videoError ? (
+              {videoError || !videoUrl ? (
                 <div className="text-center max-w-md">
                   <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-8 inline-block mb-4">
                     <File className="w-16 h-16 text-gray-400 dark:text-gray-500" />
@@ -196,7 +245,7 @@ export const FilePreviewModal = ({ file, isOpen, onClose }: FilePreviewModalProp
                 </div>
               ) : (
                 <video
-                  src={fileService.getDownloadUrl(file.id)}
+                  src={videoUrl}
                   controls
                   className="w-full max-h-[70vh] rounded-lg shadow-lg"
                   onError={() => setVideoError(true)}

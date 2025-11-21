@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { FileList } from '../components';
-import { RefreshCw, CheckSquare, Square, Trash2, X } from 'lucide-react';
+import { FileList, FileUpload } from '../components';
+import { RefreshCw, CheckSquare, Square, Trash2, X, Upload, ChevronDown, ChevronUp } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBulkFileDelete, useFiles } from '../hooks';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
@@ -11,6 +11,7 @@ export const GalleryPage = () => {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<Set<number>>(new Set());
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
   const { deleteFiles, isDeleting } = useBulkFileDelete();
 
   const handleRefresh = () => {
@@ -116,6 +117,18 @@ export const GalleryPage = () => {
           {!selectionMode && (
             <>
               <button
+                onClick={() => setShowUpload(!showUpload)}
+                className="flex items-center gap-2 bg-blue-600 dark:bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                <span>Upload Files</span>
+                {showUpload ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              <button
                 onClick={handleToggleSelectionMode}
                 className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
@@ -133,6 +146,13 @@ export const GalleryPage = () => {
           )}
         </div>
       </div>
+
+      {showUpload && !selectionMode && (
+        <div className="mb-8">
+          <FileUpload />
+        </div>
+      )}
+
       <FileList 
         selectionMode={selectionMode}
         selectedFiles={selectedFiles}

@@ -6,3 +6,4 @@ export { ConfirmDeleteModal } from './ConfirmDeleteModal';
 export { Layout } from './Layout';
 export { Link } from './Link';
 export { Router } from './Router';
+export { ProtectedRoute } from './ProtectedRoute';
